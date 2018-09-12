@@ -1,0 +1,31 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="translate"
+        android:summary="@string/pref_description_translate"
+        android:title="@string/pref_title_translate" />
+
+    <!-- NOTE: EditTextPreference accepts EditText attributes. -->
+    <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
+    <EditTextPreference
+        android:defaultValue="@string/pref_default_SCT"
+        android:inputType="numberDecimal"
+        android:key="SCT"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/pref_title_SCT"
+        android:summary="@string/pref_title_SCT"/>
+
+    <EditTextPreference
+        android:defaultValue="@string/pref_default_UPS"
+        android:inputType="numberDecimal"
+        android:key="UPS"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/pref_title_UPS"
+        android:summary="@string/pref_title_UPS" />
+
+</PreferenceScreen>

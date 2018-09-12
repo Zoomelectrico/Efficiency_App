@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">EfficiencyApp</string>
+    <string name="title_home">Home</string>
+    <string name="title_setting">Settings</string>
+    <string name="title_history">History</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="title_activity_history">History</string>
+    <string name="LCT">Last Cycle:</string>
+    <string name="EFF">Efficiency</string>
+    <string name="CC">Cycle Count</string>
+
+
+    <!-- Strings related to Settings -->
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_title_translate">Spanish</string>
+    <string name="pref_description_translate">Enable the user Interface in Spanish</string>
+
+    <string name="pref_title_UPS">Units per Cycle</string>
+    <string name="pref_default_UPS">30.0</string>
+
+    <string name="pref_title_SCT">Standard Cycle Time</string>
+    <string name="pref_default_SCT">0.2</string>
+
+
+</resources>
