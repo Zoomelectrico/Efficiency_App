@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -23,11 +25,13 @@ import android.widget.Toast;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.concurrent.Semaphore;
 
 import co.avilatek.efficiencyapp.helpers.CycleTimeHandler;
 import co.avilatek.efficiencyapp.helpers.FileCyleHelper;
 import co.avilatek.efficiencyapp.helpers.FileHelper;
+import co.avilatek.efficiencyapp.helpers.LocaleHelper;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -39,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private int s, m, h = 0;
     private long ms, st, tb, ut = 0L;
     private boolean undoable = true;
-    private final Context context = this;
+    private Context context = this;
     private final CycleTimeHandler cycleTimeHandler = CycleTimeHandler.builder();
 
     @Override
@@ -57,6 +61,21 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         this.getInitialData();
+        translate();
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(LocaleHelper.onAttach(base));
+    }
+
+    private void translate() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if(preferences.getBoolean("translate", false)) {
+            LocaleHelper.setLocale(this, "es");
+        } else {
+            LocaleHelper.setLocale(this, "en");
+        }
     }
 
     private void configBottomNav() {
@@ -114,9 +133,9 @@ public class MainActivity extends AppCompatActivity {
         String cc = getString(R.string.CC) + " " + String.valueOf(TCD);
         String lct = "";
         if(cycleTimeHandler.getList().isEmpty()) {
-            lct = "0:00:00";
+            lct = getString(R.string.LCT) + "\n" +"0:00:00";
         } else {
-            lct = getString(R.string.LCT) + " " + cycleTimeHandler.getList().get(cycleTimeHandler.getList().size() - 1).getTime();
+            lct = getString(R.string.LCT) + "\n" + cycleTimeHandler.getList().get(cycleTimeHandler.getList().size() - 1).getTime();
         }
         ((TextView) findViewById(R.id.txtEFF)).setText(er);
         ((TextView) findViewById(R.id.txtCC)).setText(cc);

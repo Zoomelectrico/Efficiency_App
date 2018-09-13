@@ -10,13 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import co.avilatek.efficiencyapp.dummy.DummyContent;
-import co.avilatek.efficiencyapp.dummy.DummyContent.DummyItem;
 import co.avilatek.efficiencyapp.helpers.CycleTimeHandler;
 import co.avilatek.efficiencyapp.helpers.CycleTimeModel;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 /**

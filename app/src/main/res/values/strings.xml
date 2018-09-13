@@ -6,8 +6,10 @@
     <string name="title_activity_settings">Settings</string>
     <string name="title_activity_history">History</string>
     <string name="LCT">Last Cycle:</string>
-    <string name="EFF">Efficiency</string>
-    <string name="CC">Cycle Count</string>
+    <string name="EFF">Efficiency:</string>
+    <string name="CC">Cycle Count:</string>
+    <string name="CT">Worked Time:</string>
+    <string name="BCT">Best Cycle:</string>
 
 
     <!-- Strings related to Settings -->

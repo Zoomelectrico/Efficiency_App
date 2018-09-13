@@ -20,7 +20,8 @@
 
     <EditTextPreference
         android:defaultValue="@string/pref_default_UPS"
-        android:inputType="numberDecimal"
+        android:inputType="number"
+        android:numeric="integer"
         android:key="UPS"
         android:maxLines="1"
         android:selectAllOnFocus="true"

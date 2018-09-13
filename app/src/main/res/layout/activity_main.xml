@@ -14,12 +14,21 @@
         android:gravity="center"
         android:background="@color/white">
         <LinearLayout
-            android:layout_height="200dp"
+            android:layout_height="300dp"
             android:layout_width="match_parent"
             android:padding="8dp"
             android:background="@drawable/gradient"
             android:orientation="vertical"
             android:gravity="center">
+            <TextView
+                android:id="@+id/txtCT"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/CT"
+                android:textAlignment="center"
+                android:textSize="24sp"
+                android:padding="12dp"
+                android:textColor="@color/white"/>
             <Chronometer
                 android:id="@+id/clock"
                 android:layout_width="match_parent"
@@ -33,6 +42,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/LCT"
+                android:textAlignment="center"
+                android:textSize="24sp"
+                android:padding="12dp"
+                android:textColor="@color/white"/>
+            <TextView
+                android:id="@+id/txtBCT"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/BCT"
                 android:textAlignment="center"
                 android:textSize="24sp"
                 android:padding="12dp"

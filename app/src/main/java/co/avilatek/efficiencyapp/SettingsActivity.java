@@ -3,7 +3,9 @@ package co.avilatek.efficiencyapp;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -21,8 +23,11 @@ import android.text.TextUtils;
 import android.view.MenuItem;
 
 import java.util.List;
+import java.util.Locale;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
+
+    private Context context = this;
 
     private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
         @Override
@@ -48,6 +53,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        language();
         super.onCreate(savedInstanceState);
         setupActionBar();
     }
@@ -72,6 +78,23 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+    }
+
+    private void language() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        Locale locale;
+        if(preferences.getBoolean("translate",false)) {
+            // Spanish
+            locale = new Locale("es");
+        } else {
+            //English
+            locale = new Locale("en");
+        }
+        Locale.setDefault(locale);
+        Resources res = context.getResources();
+        Configuration config = new Configuration(res.getConfiguration());
+        config.setLocale(locale);
+        context = context.createConfigurationContext(config);
     }
 
     @Override
