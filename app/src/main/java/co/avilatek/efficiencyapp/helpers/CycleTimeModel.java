@@ -1,44 +1,78 @@
 package co.avilatek.efficiencyapp.helpers;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
-public class CycleTimeModel {
+public class CycleTimeModel implements Parcelable {
 
     private int cycle;
     private String time;
+    private long duration;
 
-    private CycleTimeModel(int c, String t) {
+    private CycleTimeModel(int c, String t, long d) {
         this.cycle = c;
         this.time = t;
+        this.duration = d;
+    }
+
+    private CycleTimeModel(Parcel in) {
+        this.cycle = in.readInt();
+        this.time = in.readString();
+        this.duration = in.readLong();
     }
 
     @NonNull
-    public static CycleTimeModel builder(int cycle, String time) {
-        return new CycleTimeModel(cycle, time);
+    public static CycleTimeModel builder(int cycle, String time, long currentTime) {
+        return new CycleTimeModel(cycle, time, currentTime);
     }
 
-    public static long getTimeinSeconds(CycleTimeModel ct) {
-        String[] timeArray = ct.time.split(":");
-        long seconds = 0L;
-        if(timeArray.length == 3) {
-            try {
-                seconds = Long.parseLong(timeArray[0]) * 3600 + Long.parseLong(timeArray[1]) * 60 + Long.parseLong(timeArray[2]);
-                return seconds;
-            } catch (NumberFormatException e) {
-                seconds = -1;
-                return seconds;
-            }
-        } else if (timeArray.length == 2) {
-            try {
-                seconds = Long.parseLong(timeArray[0]) * 60 + Long.parseLong(timeArray[1]);
-                return seconds;
-            } catch (NumberFormatException e) {
-                seconds = -1;
-                return seconds;
-            }
-        } else {
-            return -1;
+    public long getDuration() {
+        return duration;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(cycle);
+        dest.writeString(time);
+        dest.writeLong(duration);
+    }
+
+
+    public static Parcelable.Creator<CycleTimeModel> CREATOR = new Creator<CycleTimeModel>() {
+        @Override
+        public CycleTimeModel createFromParcel(Parcel source) {
+            return new CycleTimeModel(source);
         }
+
+        @Override
+        public CycleTimeModel[] newArray(int size) {
+            return new CycleTimeModel[size];
+        }
+    };
+
+    public int getCycle() {
+        return cycle;
     }
 
+    public void setCycle(int cycle) {
+        this.cycle = cycle;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public void setDuration(long duration) {
+        this.duration = duration;
+    }
 }

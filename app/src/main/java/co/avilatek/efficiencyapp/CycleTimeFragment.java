@@ -12,8 +12,12 @@ import android.view.ViewGroup;
 
 import co.avilatek.efficiencyapp.dummy.DummyContent;
 import co.avilatek.efficiencyapp.dummy.DummyContent.DummyItem;
+import co.avilatek.efficiencyapp.helpers.CycleTimeHandler;
+import co.avilatek.efficiencyapp.helpers.CycleTimeModel;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A fragment representing a list of Items.
@@ -23,11 +27,10 @@ import java.util.List;
  */
 public class CycleTimeFragment extends Fragment {
 
-    // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
-    // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
+    private ArrayList<CycleTimeModel> list = new ArrayList<>();
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -59,7 +62,11 @@ public class CycleTimeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_cycletime_list, container, false);
-
+        Bundle bundle = Objects.requireNonNull(getActivity()).getIntent().getExtras();
+        if(bundle != null) {
+            CycleTimeHandler handler = (CycleTimeHandler) bundle.getParcelable("handler");
+            list = handler.getList();
+        }
         // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
@@ -69,7 +76,7 @@ public class CycleTimeFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MyCycleTimeRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+            recyclerView.setAdapter(new MyCycleTimeRecyclerViewAdapter(list, mListener));
         }
         return view;
     }
@@ -104,6 +111,6 @@ public class CycleTimeFragment extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
+        void onListFragmentInteraction(CycleTimeModel item);
     }
 }

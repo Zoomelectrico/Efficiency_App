@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -23,7 +22,11 @@ import android.widget.Toast;
 
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
+import java.util.Calendar;
+import java.util.concurrent.Semaphore;
 
+import co.avilatek.efficiencyapp.helpers.CycleTimeHandler;
+import co.avilatek.efficiencyapp.helpers.FileCyleHelper;
 import co.avilatek.efficiencyapp.helpers.FileHelper;
 
 public class MainActivity extends AppCompatActivity {
@@ -31,33 +34,35 @@ public class MainActivity extends AppCompatActivity {
     private double SCT;
     private double UPS;
     private int TCD = 0;
-
     private Chronometer clock;
     private final Handler handler = new Handler();
     private int s, m, h = 0;
     private long ms, st, tb, ut = 0L;
-
     private boolean undoable = true;
-
     private final Context context = this;
-
+    private final CycleTimeHandler cycleTimeHandler = CycleTimeHandler.builder();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(itemSelectedListener);
-        checkPermissions();
+        this.checkPermissions();
+        this.configBottomNav();
         this.clock = findViewById(R.id.clock);
         this.configPlayButtons();
-        this.configCCButons();
+        this.configCCButtons();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         this.getInitialData();
+    }
+
+    private void configBottomNav() {
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation.setOnNavigationItemSelectedListener(itemSelectedListener);
+        navigation.setSelectedItemId(R.id.navigation_home);
     }
 
     private void getInitialData() {
@@ -79,8 +84,7 @@ public class MainActivity extends AppCompatActivity {
                 st = SystemClock.uptimeMillis();
                 handler.postDelayed(thread, 0);
                 clock.start();
-                findViewById(R.id.btnPlay).setEnabled(false);
-                addCSVRow("Start");
+                addFullDataRow("Start");
             }
         });
         findViewById(R.id.btnPause).setOnClickListener(new View.OnClickListener() {
@@ -89,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
                 tb += ms;
                 handler.removeCallbacks(thread);
                 clock.stop();
-                addCSVRow("Pause");
+                addFullDataRow("Pause");
             }
         });
         findViewById(R.id.btnStop).setOnClickListener(new View.OnClickListener() {
@@ -100,8 +104,7 @@ public class MainActivity extends AppCompatActivity {
                 handler.removeCallbacks(thread);
                 clock.stop();
                 clock.setText("0:00:00");
-                findViewById(R.id.btnPlay).setEnabled(true);
-                addCSVRow("Stop");
+                addFullDataRow("Stop");
             }
         });
     }
@@ -109,19 +112,27 @@ public class MainActivity extends AppCompatActivity {
     private void configLabels() {
         String er = getString(R.string.EFF) + " " + efficiencyRate() + "%";
         String cc = getString(R.string.CC) + " " + String.valueOf(TCD);
+        String lct = "";
+        if(cycleTimeHandler.getList().isEmpty()) {
+            lct = "0:00:00";
+        } else {
+            lct = getString(R.string.LCT) + " " + cycleTimeHandler.getList().get(cycleTimeHandler.getList().size() - 1).getTime();
+        }
         ((TextView) findViewById(R.id.txtEFF)).setText(er);
         ((TextView) findViewById(R.id.txtCC)).setText(cc);
+        ((TextView) findViewById(R.id.txtLCT)).setText(lct);
     }
 
-    private void configCCButons() {
+    private void configCCButtons() {
         findViewById(R.id.btnPlusOne).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 TCD++;
                 undoable = true;
-                addCSVRow("Cycle");
+                addFullDataRow("Cycle");
+                addCycleDataRow();
+                cycleTimeHandler.addElement(TCD, h, m, s);
                 configLabels();
-
             }
         });
         findViewById(R.id.btnUndo).setOnClickListener(new View.OnClickListener() {
@@ -129,7 +140,10 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (undoable) {
                     TCD--;
-                    addCSVRow("Undo Cycle");
+                    addFullDataRow("Undo Cycle");
+                    removeCycleData();
+                    configLabels();
+                    cycleTimeHandler.undoLastCycle();
                 } else {
                     Toast.makeText(context, "", Toast.LENGTH_SHORT).show();
                 }
@@ -137,9 +151,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void addCSVRow (String event) {
+    private void addFullDataRow(String event) {
         StringBuilder sb = new StringBuilder();
-        sb.append(new Timestamp(System.currentTimeMillis() / 1000).toString());
+        sb.append(new Timestamp(Calendar.getInstance().getTimeInMillis() / 1000).toString());
         sb.append(",");
         sb.append(event);
         sb.append(",");
@@ -149,10 +163,22 @@ public class MainActivity extends AppCompatActivity {
         sb.append(",");
         sb.append(TCD);
         sb.append(",");
-        sb.append(m);
+        sb.append((h*60) + m + (s/60));
         sb.append(",");
         sb.append(efficiencyRate());
+        sb.append("%");
+        sb.append("\n");
         FileHelper.builder(this, sb.toString()).run();
+
+    }
+
+    private void addCycleDataRow() {
+        String string = String.valueOf(TCD) + "," + String.valueOf(h) + ":" + String.valueOf(m) + ":" + String.valueOf(s) + "\n";
+        FileCyleHelper.builder(string, this).run();
+    }
+
+    private void removeCycleData() {
+        // TODO: Implementar
     }
 
     private String efficiencyRate() {
@@ -171,7 +197,9 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(new Intent(context, SettingsActivity.class));
                     return true;
                 case R.id.navigation_history:
-                    startActivity(new Intent(context, CycleTimeActivity.class));
+                    Intent intent = new Intent(context, CycleTimeActivity.class);
+                    intent.putExtra("handler", cycleTimeHandler);
+                    startActivity(intent);
                     return true;
             }
             return false;

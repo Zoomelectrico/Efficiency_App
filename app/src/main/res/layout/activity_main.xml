@@ -17,7 +17,7 @@
             android:layout_height="200dp"
             android:layout_width="match_parent"
             android:padding="8dp"
-            android:background="@color/colorAccent"
+            android:background="@drawable/gradient"
             android:orientation="vertical"
             android:gravity="center">
             <Chronometer
@@ -29,6 +29,7 @@
                 android:textColor="@color/white"
                 android:padding="12dp" />
             <TextView
+                android:id="@+id/txtLCT"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/LCT"
@@ -37,13 +38,76 @@
                 android:padding="12dp"
                 android:textColor="@color/white"/>
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp">
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="10dp"
+                android:layout_gravity="center">
+                <LinearLayout
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:orientation="vertical">
+                    <LinearLayout
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="16dp">
 
+                        <TextView
+                            android:id="@+id/txtEFF"
+                            android:fontFamily="sans-serif-light"
+                            android:textColor="@color/black"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="@string/EFF"
+                            android:textSize="36sp" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:orientation="vertical">
+                        <TextView
+                            android:id="@+id/txtCC"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-light"
+                            android:textColor="@color/black"
+                            android:gravity="center"
+                            android:text="@string/CC"
+                            android:textSize="36sp" />
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center">
+                            <ImageButton
+                                android:id="@+id/btnPlusOne"
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
+                                android:src="@drawable/ic_plus_one_black_24dp"
+                                android:background="@null"/>
+                            <ImageButton
+                                android:id="@+id/btnUndo"
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
+                                android:src="@drawable/ic_undo_black_24dp"
+                                android:background="@null"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+        </LinearLayout>
         <LinearLayout
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
             android:orientation="horizontal"
             android:layout_marginTop="16dp"
-            android:padding="24dp"
+            android:padding="12dp"
             android:gravity="center">
             <ImageButton
                 android:id="@+id/btnPlay"
@@ -69,56 +133,6 @@
                 android:src="@drawable/ic_stop_black_24dp"
                 android:padding="8dp" />
         </LinearLayout>
-            <LinearLayout
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"
-                android:orientation="vertical">
-                <LinearLayout
-                    android:layout_height="wrap_content"
-                    android:layout_width="match_parent"
-                    android:orientation="vertical"
-                    android:layout_marginBottom="16dp">
-
-                    <TextView
-                        android:id="@+id/txtEFF"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="@string/EFF"
-                        android:textSize="36sp" />
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_height="wrap_content"
-                    android:layout_width="match_parent"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/txtCC"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="@string/CC"
-                        android:textSize="36sp" />
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center">
-                        <ImageButton
-                            android:id="@+id/btnPlusOne"
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
-                            android:src="@drawable/ic_plus_one_black_24dp"
-                            android:background="@null"/>
-                        <ImageButton
-                            android:id="@+id/btnUndo"
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
-                            android:src="@drawable/ic_undo_black_24dp"
-                            android:background="@null"/>
-                    </LinearLayout>
-                </LinearLayout>
-            </LinearLayout>
     </LinearLayout>
 
     <android.support.design.widget.BottomNavigationView

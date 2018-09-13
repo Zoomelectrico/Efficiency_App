@@ -9,22 +9,21 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 
-public class FileHelper extends Thread {
+public class FileCyleHelper extends Thread {
 
-    private final String FILE_NAME = "Efficiency_App_Data.csv";
+    private final String FILE_NAME = "CycleData.csv";
     private String csvRow;
     private Context context;
 
-    private FileHelper(Context context, String csvRow){
-        this.context = context;
-        this.csvRow = csvRow;
+    private FileCyleHelper(String r, Context c){
+        this.csvRow = r;
+        this.context = c;
     }
 
     @NonNull
-    public static FileHelper builder(Context context, String csvRow) {
-        return new FileHelper(context, csvRow);
+    public static FileCyleHelper builder(String csvRow, Context context) {
+        return new FileCyleHelper(csvRow, context);
     }
 
     private void writeBackup() {
