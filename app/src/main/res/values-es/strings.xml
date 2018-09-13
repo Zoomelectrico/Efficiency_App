@@ -17,14 +17,29 @@
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>
 
-    <string name="pref_title_translate">Spanish</string>
-    <string name="pref_description_translate">habilitar la interfaz de usuario en espanol</string>
+    <string name="pref_title_translate">Idioma</string>
+
+    <string-array name="languages">
+        <item>Español</item>
+        <item>English</item>
+    </string-array>
+
+    <string-array name="languagesValues">
+        <item>es</item>
+        <item>en</item>
+    </string-array>
 
     <string name="pref_title_UPS">Unidades por Ciclo</string>
     <string name="pref_default_UPS">30</string>
 
     <string name="pref_title_SCT">Tiempo standard de Ciclo</string>
     <string name="pref_default_SCT">0.2</string>
+
+    <string name="pref_title_password">Contraseña</string>
+    <string name="pref_default_password">1234</string>
+    <string name="password">Contraseña</string>
+    <string name="passError">Error Desconocido</string>
+    <string name="blank">Campo de contraseña Vacio</string>
 
 
 </resources>

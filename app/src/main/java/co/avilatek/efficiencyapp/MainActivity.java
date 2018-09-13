@@ -71,11 +71,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void translate() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        if(preferences.getBoolean("translate", false)) {
-            LocaleHelper.setLocale(this, "es");
-        } else {
-            LocaleHelper.setLocale(this, "en");
-        }
+        LocaleHelper.setLocale(this, preferences.getString("translateCode", "en"));
     }
 
     private void configBottomNav() {
@@ -131,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
     private void configLabels() {
         String er = getString(R.string.EFF) + " " + efficiencyRate() + "%";
         String cc = getString(R.string.CC) + " " + String.valueOf(TCD);
-        String lct = "";
+        String lct;
         if(cycleTimeHandler.getList().isEmpty()) {
             lct = getString(R.string.LCT) + "\n" +"0:00:00";
         } else {
@@ -140,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.txtEFF)).setText(er);
         ((TextView) findViewById(R.id.txtCC)).setText(cc);
         ((TextView) findViewById(R.id.txtLCT)).setText(lct);
+        ((TextView) findViewById(R.id.txtBCT)).setText(cycleTimeHandler.bestTime());
     }
 
     private void configCCButtons() {
@@ -151,7 +148,16 @@ public class MainActivity extends AppCompatActivity {
                 addFullDataRow("Cycle");
                 addCycleDataRow();
                 cycleTimeHandler.addElement(TCD, h, m, s);
+                handler.removeCallbacks(thread);
+                ms = st = tb = ut = 0L;
+                s = m = h = 0;
+                handler.removeCallbacks(thread);
+                clock.stop();
                 configLabels();
+                st = SystemClock.uptimeMillis();
+                handler.postDelayed(thread, 0);
+                clock.start();
+                addFullDataRow("Start");
             }
         });
         findViewById(R.id.btnUndo).setOnClickListener(new View.OnClickListener() {
@@ -213,7 +219,7 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.navigation_home:
                     return true;
                 case R.id.navigation_settings:
-                    startActivity(new Intent(context, SettingsActivity.class));
+                    new PasswordDialog().show(getSupportFragmentManager(), "Algo");
                     return true;
                 case R.id.navigation_history:
                     Intent intent = new Intent(context, CycleTimeActivity.class);

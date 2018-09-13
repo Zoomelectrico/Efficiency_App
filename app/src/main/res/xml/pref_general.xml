@@ -1,10 +1,13 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <SwitchPreference
-        android:defaultValue="false"
-        android:key="translate"
-        android:summary="@string/pref_description_translate"
-        android:title="@string/pref_title_translate" />
+    <ListPreference
+        android:key="translateCode"
+        android:defaultValue="en"
+        android:title="@string/pref_title_translate"
+        android:entries="@array/languages"
+        android:entryValues="@array/languagesValues"
+        android:summary="@string/pref_description_translate" />
+
 
     <!-- NOTE: EditTextPreference accepts EditText attributes. -->
     <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
@@ -28,5 +31,15 @@
         android:singleLine="true"
         android:title="@string/pref_title_UPS"
         android:summary="@string/pref_title_UPS" />
+
+    <EditTextPreference
+        android:defaultValue="@string/pref_default_password"
+        android:inputType="text"
+        android:key="password"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/pref_title_password"
+        android:summary="@string/pref_title_password"/>
 
 </PreferenceScreen>

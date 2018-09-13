@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class CycleTimeHandler implements Parcelable {
 
@@ -31,14 +32,27 @@ public class CycleTimeHandler implements Parcelable {
     }
 
     public void addElement(int cycle, int hours, int minutes, int seconds) {
-        if(list.isEmpty()) {
-            String time = String.valueOf(hours) + ":" + String.valueOf(minutes) + ":" + String.valueOf(seconds);
-            list.add(CycleTimeModel.builder(cycle, time, hours*3600 + minutes*60 + seconds));
+        this.list.add(CycleTimeModel.builder(cycle, String.valueOf(hours)+":"+String.valueOf(minutes)+":"+String.valueOf(seconds)));
+    }
+
+
+    public String bestTime() {
+        if(list.size() > 0) {
+            long[] times = new long[this.list.size()];
+            for (int i = 0; i < times.length; i++) {
+                times[i] = this.list.get(i).getTimeInSeconds();
+            }
+            Arrays.sort(times);
+            long better = times[0];
+            StringBuilder sb = new StringBuilder();
+            sb.append((int) better / 3600);
+            sb.append(":");
+            sb.append((int) better / 60);
+            sb.append(":");
+            sb.append((int) better % 60);
+            return sb.toString();
         } else {
-            CycleTimeModel ct = list.get(list.size()-1);
-            long timeInSeconds = (hours*3600 + minutes*60 + seconds) - ct.getDuration();
-            String time = String.valueOf((int) timeInSeconds / 3600) + ":" + String.valueOf((int) minutes/60) + ":" + String.valueOf(seconds%60);
-            list.add(CycleTimeModel.builder(cycle, time, (hours*3600 + minutes*60 + seconds)));
+            return "0:00:00";
         }
     }
 

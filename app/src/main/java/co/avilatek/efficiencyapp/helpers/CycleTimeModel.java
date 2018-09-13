@@ -8,27 +8,20 @@ public class CycleTimeModel implements Parcelable {
 
     private int cycle;
     private String time;
-    private long duration;
 
-    private CycleTimeModel(int c, String t, long d) {
+    private CycleTimeModel(int c, String t) {
         this.cycle = c;
         this.time = t;
-        this.duration = d;
     }
 
     private CycleTimeModel(Parcel in) {
         this.cycle = in.readInt();
         this.time = in.readString();
-        this.duration = in.readLong();
     }
 
     @NonNull
-    public static CycleTimeModel builder(int cycle, String time, long currentTime) {
-        return new CycleTimeModel(cycle, time, currentTime);
-    }
-
-    public long getDuration() {
-        return duration;
+    public static CycleTimeModel builder(int cycle, String time) {
+        return new CycleTimeModel(cycle, time);
     }
 
     @Override
@@ -40,7 +33,6 @@ public class CycleTimeModel implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(cycle);
         dest.writeString(time);
-        dest.writeLong(duration);
     }
 
 
@@ -55,6 +47,11 @@ public class CycleTimeModel implements Parcelable {
             return new CycleTimeModel[size];
         }
     };
+
+    public long getTimeInSeconds() {
+        String[] array = this.time.split(":");
+        return (Long.parseLong(array[0])*3600) + (Long.parseLong(array[1])*60) + (Long.parseLong(array[2]));
+    }
 
     public int getCycle() {
         return cycle;
@@ -72,7 +69,4 @@ public class CycleTimeModel implements Parcelable {
         this.time = time;
     }
 
-    public void setDuration(long duration) {
-        this.duration = duration;
-    }
 }
