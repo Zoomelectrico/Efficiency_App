@@ -1,6 +1,7 @@
 package co.avilatek.efficiencyapp;
 
 import android.annotation.TargetApi;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,14 +21,16 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 
 import java.util.List;
 import java.util.Locale;
 
-public class SettingsActivity extends AppCompatPreferenceActivity {
+import co.avilatek.efficiencyapp.helpers.LocaleHelper;
 
-    private Context context = this;
+public class SettingsActivity extends AppCompatPreferenceActivity implements
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
         @Override
@@ -53,9 +56,21 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        language();
         super.onCreate(savedInstanceState);
         setupActionBar();
+        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -80,23 +95,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         }
     }
 
-    private void language() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        Locale locale;
-        if(preferences.getBoolean("translate",false)) {
-            // Spanish
-            locale = new Locale("es");
-        } else {
-            //English
-            locale = new Locale("en");
-        }
-        Locale.setDefault(locale);
-        Resources res = context.getResources();
-        Configuration config = new Configuration(res.getConfiguration());
-        config.setLocale(locale);
-        context = context.createConfigurationContext(config);
-    }
-
     @Override
     public boolean onIsMultiPane() {
         return isXLargeTablet(this);
@@ -111,6 +109,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     protected boolean isValidFragment(String fragmentName) {
         return PreferenceFragment.class.getName().equals(fragmentName)
                 || GeneralPreferenceFragment.class.getName().equals(fragmentName);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if(key.equals("translateCode")) {
+            LocaleHelper.setLocale(this, sharedPreferences.getString(key,"en"));
+            recreate();
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)

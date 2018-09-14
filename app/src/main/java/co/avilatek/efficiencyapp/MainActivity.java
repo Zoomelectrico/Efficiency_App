@@ -24,11 +24,13 @@ import android.widget.Toast;
 
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.concurrent.Semaphore;
 
 import co.avilatek.efficiencyapp.helpers.CycleTimeHandler;
+import co.avilatek.efficiencyapp.helpers.CycleTimeModel;
 import co.avilatek.efficiencyapp.helpers.FileCyleHelper;
 import co.avilatek.efficiencyapp.helpers.FileHelper;
 import co.avilatek.efficiencyapp.helpers.LocaleHelper;
@@ -38,23 +40,25 @@ public class MainActivity extends AppCompatActivity {
     private double SCT;
     private double UPS;
     private int TCD = 0;
-    private Chronometer clock;
     private final Handler handler = new Handler();
     private int s, m, h = 0;
     private long ms, st, tb, ut = 0L;
     private boolean undoable = true;
     private Context context = this;
     private final CycleTimeHandler cycleTimeHandler = CycleTimeHandler.builder();
+    private String locale;
+    private boolean isTicking = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.checkPermissions();
-        this.configBottomNav();
-        this.clock = findViewById(R.id.clock);
         this.configPlayButtons();
         this.configCCButtons();
+        this.configLabels();
+        locale = PreferenceManager.getDefaultSharedPreferences(this).getString("translateCode","en");
+        ((TextView) findViewById(R.id.txtCT)).setText(getString(R.string.CT) + "\n0:00:00");
     }
 
     @Override
@@ -62,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         this.getInitialData();
         translate();
+        configBottomNav();
     }
 
     @Override
@@ -69,9 +74,39 @@ public class MainActivity extends AppCompatActivity {
         super.attachBaseContext(LocaleHelper.onAttach(base));
     }
 
+    @Override
+    protected final void onRestoreInstanceState(final Bundle inState) {
+        super.onRestoreInstanceState(inState);
+        if(inState != null) {
+            this.tb = inState.getLong("tb");
+            this.TCD = inState.getInt("TCD");
+            cycleTimeHandler.setList(inState.getParcelableArrayList("list"));
+            if(inState.getBoolean("tick")) {
+                startClock();
+            }
+            configLabels();
+        }
+    }
+
+    @Override
+    protected final void onSaveInstanceState(final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if(outState != null) {
+            outState.putLong("tb", tb);
+            outState.putBoolean("tick", isTicking);
+            outState.putInt("TCD", TCD);
+            outState.putParcelableArrayList("list", cycleTimeHandler.getList());
+        }
+    }
+
+
     private void translate() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         LocaleHelper.setLocale(this, preferences.getString("translateCode", "en"));
+        if(!preferences.getString("translateCode", "en").equals(locale)) {
+            recreate();
+        }
+
     }
 
     private void configBottomNav() {
@@ -92,33 +127,44 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void startClock() {
+        st = SystemClock.uptimeMillis();
+        handler.postDelayed(thread, 0);
+        isTicking = true;
+    }
+
+    private void pauseClock() {
+        tb += ms;
+        handler.removeCallbacks(thread);
+        isTicking = false;
+    }
+
+    private void stopClock() {
+        ms = st = tb = ut = 0L;
+        s = m = h = 0;
+        handler.removeCallbacks(thread);
+        ((TextView) findViewById(R.id.txtCT)).setText(getString(R.string.CT) + "\n0:00:00");
+    }
+
     private void configPlayButtons() {
         findViewById(R.id.btnPlay).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                st = SystemClock.uptimeMillis();
-                handler.postDelayed(thread, 0);
-                clock.start();
+                startClock();
                 addFullDataRow("Start");
             }
         });
         findViewById(R.id.btnPause).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tb += ms;
-                handler.removeCallbacks(thread);
-                clock.stop();
+                pauseClock();
                 addFullDataRow("Pause");
             }
         });
         findViewById(R.id.btnStop).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ms = st = tb = ut = 0L;
-                s = m = h = 0;
-                handler.removeCallbacks(thread);
-                clock.stop();
-                clock.setText("0:00:00");
+                stopClock();
                 addFullDataRow("Stop");
             }
         });
@@ -127,6 +173,7 @@ public class MainActivity extends AppCompatActivity {
     private void configLabels() {
         String er = getString(R.string.EFF) + " " + efficiencyRate() + "%";
         String cc = getString(R.string.CC) + " " + String.valueOf(TCD);
+        String bct = getString(R.string.BCT) + "\n" + cycleTimeHandler.bestTime();
         String lct;
         if(cycleTimeHandler.getList().isEmpty()) {
             lct = getString(R.string.LCT) + "\n" +"0:00:00";
@@ -136,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.txtEFF)).setText(er);
         ((TextView) findViewById(R.id.txtCC)).setText(cc);
         ((TextView) findViewById(R.id.txtLCT)).setText(lct);
-        ((TextView) findViewById(R.id.txtBCT)).setText(cycleTimeHandler.bestTime());
+        ((TextView) findViewById(R.id.txtBCT)).setText(bct);
     }
 
     private void configCCButtons() {
@@ -148,16 +195,9 @@ public class MainActivity extends AppCompatActivity {
                 addFullDataRow("Cycle");
                 addCycleDataRow();
                 cycleTimeHandler.addElement(TCD, h, m, s);
-                handler.removeCallbacks(thread);
-                ms = st = tb = ut = 0L;
-                s = m = h = 0;
-                handler.removeCallbacks(thread);
-                clock.stop();
+                stopClock();
                 configLabels();
-                st = SystemClock.uptimeMillis();
-                handler.postDelayed(thread, 0);
-                clock.start();
-                addFullDataRow("Start");
+                startClock();
             }
         });
         findViewById(R.id.btnUndo).setOnClickListener(new View.OnClickListener() {
@@ -207,7 +247,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String efficiencyRate() {
-        return new DecimalFormat("#.00").format((SCT * UPS * TCD) / m);
+        if (m > 0) {
+            return new DecimalFormat("#.00").format((SCT * UPS * TCD) / (h*60 + m));
+        } else {
+            return "0";
+        }
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener itemSelectedListener
@@ -240,8 +284,8 @@ public class MainActivity extends AppCompatActivity {
             m = s / 60;
             h = m / 60;
             s = s % 60;
-            String string = "" + h + ":" + String.format("%02d", m) + ":" + String.format("%02d", s);
-            clock.setText(string);
+            String string = getString(R.string.CT) + "\n" + h + ":" + String.format("%02d", m) + ":" + String.format("%02d", s);
+            ((TextView) findViewById(R.id.txtCT)).setText(string);
             handler.postDelayed(this, 0);
         }
     };

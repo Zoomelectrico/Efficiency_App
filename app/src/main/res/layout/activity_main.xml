@@ -33,14 +33,7 @@
                     android:textSize="24sp"
                     android:padding="12dp"
                     android:textColor="@color/white"/>
-                <Chronometer
-                    android:id="@+id/clock"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="24sp"
-                    android:textAlignment="center"
-                    android:textColor="@color/white"
-                    android:padding="12dp" />
+
                 <TextView
                     android:id="@+id/txtLCT"
                     android:layout_width="match_parent"

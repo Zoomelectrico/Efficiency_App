@@ -26,6 +26,9 @@ public class CycleTimeHandler implements Parcelable {
     public ArrayList<CycleTimeModel> getList() {
         return list;
     }
+    public void setList(ArrayList list) {
+        this.list = list;
+    }
 
     public void undoLastCycle() {
         this.list.remove(list.size() - 1);
