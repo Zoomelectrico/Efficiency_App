@@ -32,9 +32,11 @@
     </string-array>
 
     <string name="pref_title_UPS">Unidades por ciclo</string>
+    <string name="pref_description_UPS">La cantidad de Elementos productos por ciclo</string>
     <string name="pref_default_UPS">30</string>
 
     <string name="pref_title_SCT">Tiempo estandar del ciclo</string>
+    <string name="pref_description_SCT">El tiempo necesario para completar un pieza en un ciclo, expresado en fracciones de minutos por producto</string>
     <string name="pref_default_SCT">0.2</string>
 
     <string name="pref_title_password">Contraseña</string>

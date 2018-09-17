@@ -33,27 +33,9 @@ import co.avilatek.efficiencyapp.helpers.LocaleHelper;
 public class SettingsActivity extends AppCompatPreferenceActivity implements
         SharedPreferences.OnSharedPreferenceChangeListener {
 
-    @NonNull
-    private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
-        @Override
-        public boolean onPreferenceChange(Preference preference, Object value) {
-            String stringValue = value.toString();
-            preference.setSummary(stringValue);
-            return true;
-        }
-    };
-
     private static boolean isXLargeTablet(Context context) {
         return (context.getResources().getConfiguration().screenLayout
                 & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
-    }
-
-    private static void bindPreferenceSummaryToValue(Preference preference) {
-        preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
-        sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
-                PreferenceManager
-                        .getDefaultSharedPreferences(preference.getContext())
-                        .getString(preference.getKey(), ""));
     }
 
     @Override
@@ -128,8 +110,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_general);
             setHasOptionsMenu(true);
-            bindPreferenceSummaryToValue(findPreference("SCT"));
-            bindPreferenceSummaryToValue(findPreference("UPS"));
         }
 
         @Override

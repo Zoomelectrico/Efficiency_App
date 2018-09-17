@@ -31,9 +31,11 @@
     </string-array>
 
     <string name="pref_title_UPS">Units per cycle</string>
+    <string name="pref_description_UPS">The amount of elements produced per cycle</string>
     <string name="pref_default_UPS">30</string>
 
     <string name="pref_title_SCT">Standard cycle time</string>
+    <string name="pref_description_SCT">The time necessary to complete a product in a cycle, measured in parts of minutes per product</string>
     <string name="pref_default_SCT">0.2</string>
 
     <string name="pref_title_password">Password</string>

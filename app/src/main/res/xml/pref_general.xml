@@ -19,7 +19,7 @@
         android:selectAllOnFocus="true"
         android:singleLine="true"
         android:title="@string/pref_title_SCT"
-        android:summary="@string/pref_title_SCT"/>
+        android:summary="@string/pref_description_SCT"/>
 
     <EditTextPreference
         android:defaultValue="@string/pref_default_UPS"
@@ -30,7 +30,7 @@
         android:selectAllOnFocus="true"
         android:singleLine="true"
         android:title="@string/pref_title_UPS"
-        android:summary="@string/pref_title_UPS" />
+        android:summary="@string/pref_description_UPS" />
 
     <EditTextPreference
         android:defaultValue="@string/pref_default_password"
