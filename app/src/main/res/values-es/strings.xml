@@ -1,15 +1,16 @@
 <resources>
-    <string name="app_name">EfficiencyApp</string>
+    <string name="app_name">Eficiencia de Bluewater</string>
     <string name="title_home">Inicio</string>
-    <string name="title_setting">Configuracion</string>
+    <string name="title_setting">Configuración</string>
     <string name="title_history">Historial</string>
-    <string name="title_activity_settings">Configuracion</string>
+    <string name="title_activity_settings">Configuración</string>
     <string name="title_activity_history">Historial</string>
-    <string name="LCT">Ultimo Ciclo:</string>
-    <string name="CT">Tiempo trabajado:</string>
+    <string name="LCT">Último Ciclo:</string>
+    <string name="CT">Tiempo de Ciclo:</string>
     <string name="BCT">Mejor Ciclo:</string>
     <string name="EFF">Eficiencia</string>
     <string name="CC">Cantidad de Ciclos</string>
+
 
 
     <!-- Strings related to Settings -->
@@ -18,7 +19,7 @@
     <string name="pref_header_general">General</string>
 
     <string name="pref_title_translate">Idioma</string>
-    <string name="pref_description_translate">Cambia el Idioma de la App</string>
+    <string name="pref_description_translate">Cambia el idioma de la aplicación</string>
 
     <string-array name="languages">
         <item>Español</item>
@@ -30,17 +31,24 @@
         <item>en</item>
     </string-array>
 
-    <string name="pref_title_UPS">Unidades por Ciclo</string>
+    <string name="pref_title_UPS">Unidades por ciclo</string>
     <string name="pref_default_UPS">30</string>
 
-    <string name="pref_title_SCT">Tiempo standard de Ciclo</string>
+    <string name="pref_title_SCT">Tiempo estandar del ciclo</string>
     <string name="pref_default_SCT">0.2</string>
 
     <string name="pref_title_password">Contraseña</string>
+    <string name="pref_description_password">Cambiar la contraseña</string>
     <string name="pref_default_password">1234</string>
-    <string name="password">Contraseña</string>
-    <string name="passError">Error Desconocido</string>
-    <string name="blank">Campo de contraseña Vacio</string>
+    <string name="password">Ingresar</string>
+    <string name="wrongPass">Contraseña incorrecta</string>
+    <string name="passError">Error desconocido</string>
+    <string name="blank">Campo de contraseña vacio</string>
 
+    <string name="error1">Aun no has completado un ciclo</string>
+    <string name="error2">Ya deshiciste un ciclo</string>
+
+    <string name="TCP">Ciclos Completados</string>
+    <string name="TT">Tiempo Total</string>
 
 </resources>

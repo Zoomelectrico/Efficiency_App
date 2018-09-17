@@ -24,21 +24,21 @@ public class PasswordDialog extends DialogFragment {
         super.onCreateView(inflater, container, savedInstanceState);
         final Context context = Objects.requireNonNull(getContext());
         final View view = inflater.inflate(R.layout.fragment_password_dialog, container, false);
-        ((Button) view.findViewById(R.id.btnPassword)).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.btnPassword).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String pass = ((EditText) view.findViewById(R.id.password)).getText().toString();
                 String pw = PreferenceManager.getDefaultSharedPreferences(context).getString("password","1234");
-                Log.e("ad",pass);
-                Log.e("ad",pw);
                 if(pw.equals("") || pass.equals("")) {
-                    Toast.makeText(context, "Aja1", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, getString(R.string.blank), Toast.LENGTH_SHORT).show();
                 } else if (pw.equals(pass)) {
                     Intent intent = new Intent(context, SettingsActivity.class);
                     getDialog().dismiss();
                     startActivity(intent);
+                } else if (!pw.equals(pass)) {
+                    Toast.makeText(context, getString(R.string.wrongPass), Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(context, "aja2", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, getString(R.string.passError), Toast.LENGTH_SHORT).show();
                 }
             }
         });

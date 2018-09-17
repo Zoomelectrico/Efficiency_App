@@ -12,6 +12,27 @@ public class CycleTimeModel implements Parcelable {
     private CycleTimeModel(int c, String t) {
         this.cycle = c;
         this.time = t;
+        long time = getTimeInSeconds();
+        StringBuilder sb = new StringBuilder();
+        int h, m, s = 0;
+        h = (int) time / 3600;
+        m = (int) time / 60;
+        s = (int) time % 60;
+        if(h < 10) {
+            sb.append("0");
+        }
+        sb.append(h);
+        sb.append(":");
+        if(m < 10) {
+            sb.append("0");
+        }
+        sb.append(m);
+        sb.append(":");
+        if(s < 10) {
+            sb.append("0");
+        }
+        sb.append(s);
+        this.time = sb.toString();
     }
 
     private CycleTimeModel(Parcel in) {
@@ -30,15 +51,16 @@ public class CycleTimeModel implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeInt(cycle);
         dest.writeString(time);
     }
 
 
+    @NonNull
     public static Parcelable.Creator<CycleTimeModel> CREATOR = new Creator<CycleTimeModel>() {
         @Override
-        public CycleTimeModel createFromParcel(Parcel source) {
+        public CycleTimeModel createFromParcel(@NonNull Parcel source) {
             return new CycleTimeModel(source);
         }
 

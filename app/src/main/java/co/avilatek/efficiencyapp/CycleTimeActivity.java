@@ -11,6 +11,9 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import java.util.Locale;
 import java.util.Objects;
@@ -21,23 +24,25 @@ import co.avilatek.efficiencyapp.helpers.CycleTimeModel;
 public class CycleTimeActivity extends AppCompatActivity implements CycleTimeFragment.OnListFragmentInteractionListener {
 
     private Context context = this;
-
+    private BottomNavigationView navigation;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         language();
         super.onCreate(savedInstanceState);
-        CycleTimeHandler handler = (CycleTimeHandler) Objects.requireNonNull(getIntent()).getParcelableExtra("handler");
+        CycleTimeHandler handler = Objects.requireNonNull(getIntent()).getParcelableExtra("handler");
         Bundle bundle = new Bundle();
         bundle.putParcelable("handler", handler);
         CycleTimeFragment fragment = new CycleTimeFragment();
         fragment.setArguments(bundle);
         setContentView(R.layout.activity_cycle_time);
+        ((TextView) findViewById(R.id.txtTCP)).setText(getString(R.string.TCP)+ ": \n" + String.valueOf(getIntent().getIntExtra("TCD", 0)));
+        ((TextView) findViewById(R.id.txtTT)).setText(getString(R.string.TT)+ ": \n" +handler.getTotalTime());
         this.configBottomNav();
 
     }
 
     private void configBottomNav() {
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(itemSelectedListener);
         navigation.setSelectedItemId(R.id.navigation_history);
     }
@@ -59,6 +64,7 @@ public class CycleTimeActivity extends AppCompatActivity implements CycleTimeFra
         context = context.createConfigurationContext(config);
     }
 
+    @NonNull
     private BottomNavigationView.OnNavigationItemSelectedListener itemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -69,8 +75,8 @@ public class CycleTimeActivity extends AppCompatActivity implements CycleTimeFra
                     finish();
                     return true;
                 case R.id.navigation_settings:
-                    startActivity(new Intent(context, SettingsActivity.class));
-                    finish();
+                    navigation.setSelectedItemId(R.id.navigation_history);
+                    new PasswordDialog().show(getSupportFragmentManager(), "Algo");
                     return true;
                 case R.id.navigation_history:
                     return true;

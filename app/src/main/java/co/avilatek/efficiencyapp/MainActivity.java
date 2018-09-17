@@ -12,12 +12,14 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Chronometer;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,12 +44,16 @@ public class MainActivity extends AppCompatActivity {
     private int TCD = 0;
     private final Handler handler = new Handler();
     private int s, m, h = 0;
+    private int sE, mE, hE = 0;
     private long ms, st, tb, ut = 0L;
     private boolean undoable = true;
+    @NonNull
     private Context context = this;
     private final CycleTimeHandler cycleTimeHandler = CycleTimeHandler.builder();
+    @Nullable
     private String locale;
     private boolean isTicking = false;
+    private BottomNavigationView navigation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         this.configLabels();
         locale = PreferenceManager.getDefaultSharedPreferences(this).getString("translateCode","en");
         ((TextView) findViewById(R.id.txtCT)).setText(getString(R.string.CT) + "\n0:00:00");
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     @Override
@@ -70,12 +77,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void attachBaseContext(Context base) {
+    protected void attachBaseContext(@NonNull Context base) {
         super.attachBaseContext(LocaleHelper.onAttach(base));
     }
 
     @Override
-    protected final void onRestoreInstanceState(final Bundle inState) {
+    protected final void onRestoreInstanceState(@Nullable final Bundle inState) {
         super.onRestoreInstanceState(inState);
         if(inState != null) {
             this.tb = inState.getLong("tb");
@@ -83,13 +90,16 @@ public class MainActivity extends AppCompatActivity {
             cycleTimeHandler.setList(inState.getParcelableArrayList("list"));
             if(inState.getBoolean("tick")) {
                 startClock();
+                findViewById(R.id.btnPlay).setVisibility(View.GONE);
+                findViewById(R.id.btnPlusOne).setVisibility(View.VISIBLE);
+                findViewById(R.id.btnPause).setVisibility(View.VISIBLE);
             }
             configLabels();
         }
     }
 
     @Override
-    protected final void onSaveInstanceState(final Bundle outState) {
+    protected final void onSaveInstanceState(@Nullable final Bundle outState) {
         super.onSaveInstanceState(outState);
         if(outState != null) {
             outState.putLong("tb", tb);
@@ -98,7 +108,6 @@ public class MainActivity extends AppCompatActivity {
             outState.putParcelableArrayList("list", cycleTimeHandler.getList());
         }
     }
-
 
     private void translate() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -110,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void configBottomNav() {
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(itemSelectedListener);
         navigation.setSelectedItemId(R.id.navigation_home);
     }
@@ -152,6 +161,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 startClock();
                 addFullDataRow("Start");
+                findViewById(R.id.btnPlay).setVisibility(View.GONE);
+                findViewById(R.id.btnPlusOne).setVisibility(View.VISIBLE);
+                findViewById(R.id.btnPause).setVisibility(View.VISIBLE);
             }
         });
         findViewById(R.id.btnPause).setOnClickListener(new View.OnClickListener() {
@@ -159,6 +171,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 pauseClock();
                 addFullDataRow("Pause");
+                findViewById(R.id.btnPlay).setVisibility(View.VISIBLE);
+                findViewById(R.id.btnPlusOne).setVisibility(View.GONE);
+                findViewById(R.id.btnPause).setVisibility(View.GONE);
             }
         });
         findViewById(R.id.btnStop).setOnClickListener(new View.OnClickListener() {
@@ -166,13 +181,20 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 stopClock();
                 addFullDataRow("Stop");
+                findViewById(R.id.btnPlay).setVisibility(View.VISIBLE);
+                findViewById(R.id.btnPause).setVisibility(View.GONE);
+                findViewById(R.id.btnPlusOne).setVisibility(View.GONE);
+                sE = mE = hE = 0;
+                TCD = 0;
+                cycleTimeHandler.getList().clear();
+                configLabels();
             }
         });
     }
 
     private void configLabels() {
         String er = getString(R.string.EFF) + " " + efficiencyRate() + "%";
-        String cc = getString(R.string.CC) + " " + String.valueOf(TCD);
+        String cc = getString(R.string.CC) + " " + String.valueOf(TCD + 1);
         String bct = getString(R.string.BCT) + "\n" + cycleTimeHandler.bestTime();
         String lct;
         if(cycleTimeHandler.getList().isEmpty()) {
@@ -195,6 +217,9 @@ public class MainActivity extends AppCompatActivity {
                 addFullDataRow("Cycle");
                 addCycleDataRow();
                 cycleTimeHandler.addElement(TCD, h, m, s);
+                sE = s; mE = m; hE = h;
+                findViewById(R.id.btnPlay).setVisibility(View.GONE);
+                findViewById(R.id.btnPause).setVisibility(View.VISIBLE);
                 stopClock();
                 configLabels();
                 startClock();
@@ -204,13 +229,23 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (undoable) {
-                    TCD--;
-                    addFullDataRow("Undo Cycle");
-                    removeCycleData();
-                    configLabels();
-                    cycleTimeHandler.undoLastCycle();
+                    if(TCD > 0) {
+                        if(cycleTimeHandler.undoLastCycle()) {
+                            undoable = false;
+                            TCD--;
+                            addFullDataRow("Undo Cycle");
+                            removeCycleData();
+                            stopClock();
+                            configLabels();
+                            startClock();
+                        } else {
+                            Toast.makeText(context, getString(R.string.error1), Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(context, getString(R.string.error1), Toast.LENGTH_SHORT).show();
+                    }
                 } else {
-                    Toast.makeText(context, "", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, getString(R.string.error2), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -247,13 +282,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String efficiencyRate() {
-        if (m > 0) {
-            return new DecimalFormat("#.00").format((SCT * UPS * TCD) / (h*60 + m));
+        if (sE > 0) {
+            double totalMinutes = (hE * 60) + mE + ((sE * 1.0) / 60);
+            Log.e("minutes", String.valueOf(sE / 60));
+            Log.e("minutes", String.valueOf(totalMinutes));
+            double eff = ((SCT * UPS) / (totalMinutes)) * 100;
+            Log.e("Eff", String.valueOf(eff));
+            return new DecimalFormat("#.00").format(eff);
         } else {
-            return "0";
+            return "100";
         }
     }
 
+    @NonNull
     private BottomNavigationView.OnNavigationItemSelectedListener itemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -263,11 +304,13 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.navigation_home:
                     return true;
                 case R.id.navigation_settings:
+                    navigation.setSelectedItemId(R.id.navigation_home);
                     new PasswordDialog().show(getSupportFragmentManager(), "Algo");
                     return true;
                 case R.id.navigation_history:
                     Intent intent = new Intent(context, CycleTimeActivity.class);
                     intent.putExtra("handler", cycleTimeHandler);
+                    intent.putExtra("TCD", TCD);
                     startActivity(intent);
                     return true;
             }
@@ -275,6 +318,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    @NonNull
     private Runnable thread = new Runnable() {
         @Override
         public void run() {

@@ -2,6 +2,8 @@ package co.avilatek.efficiencyapp;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -26,6 +28,7 @@ public class CycleTimeFragment extends Fragment {
 
     private static final String ARG_COLUMN_COUNT = "column-count";
     private int mColumnCount = 1;
+    @Nullable
     private OnListFragmentInteractionListener mListener;
     private ArrayList<CycleTimeModel> list = new ArrayList<>();
 
@@ -37,6 +40,7 @@ public class CycleTimeFragment extends Fragment {
     }
 
     // TODO: Customize parameter initialization
+    @NonNull
     @SuppressWarnings("unused")
     public static CycleTimeFragment newInstance(int columnCount) {
         CycleTimeFragment fragment = new CycleTimeFragment();
@@ -61,7 +65,7 @@ public class CycleTimeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_cycletime_list, container, false);
         Bundle bundle = Objects.requireNonNull(getActivity()).getIntent().getExtras();
         if(bundle != null) {
-            CycleTimeHandler handler = (CycleTimeHandler) bundle.getParcelable("handler");
+            CycleTimeHandler handler = bundle.getParcelable("handler");
             list = handler.getList();
         }
         // Set the adapter

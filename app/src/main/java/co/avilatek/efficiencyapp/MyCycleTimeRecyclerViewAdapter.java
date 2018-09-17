@@ -1,5 +1,6 @@
 package co.avilatek.efficiencyapp;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +27,7 @@ public class MyCycleTimeRecyclerViewAdapter extends RecyclerView.Adapter<MyCycle
         mListener = listener;
     }
 
+    @NonNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
@@ -54,18 +56,20 @@ public class MyCycleTimeRecyclerViewAdapter extends RecyclerView.Adapter<MyCycle
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+        @NonNull
         public final View mView;
         public final TextView mIdView;
         public final TextView mContentView;
         public CycleTimeModel mItem;
 
-        public ViewHolder(View view) {
+        public ViewHolder(@NonNull View view) {
             super(view);
             mView = view;
-            mIdView = (TextView) view.findViewById(R.id.item_number);
-            mContentView = (TextView) view.findViewById(R.id.content);
+            mIdView = view.findViewById(R.id.item_number);
+            mContentView = view.findViewById(R.id.content);
         }
 
+        @NonNull
         @Override
         public String toString() {
             return super.toString() + " '" + mContentView.getText() + "'";
